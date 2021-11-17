@@ -1,107 +1,87 @@
-const MovieModel = require("../models/Movie.model");
-
-const CelebrityModel = require("../models/Celebrity.model");
-
-// starter code in both routes/celebrities.routes.js and routes/movies.routes.js
 const router = require("express").Router();
+const Celebrity = require("../models/Celebrity.model");
+const Movie = require("../models/Movie.model");
 
-router.get("/movies/create", (req, res, next)=> {
-    CelebrityModel.find()
-    .then((celebrities) => {
-        res.render("movies/new-movie.hbs", {celebrities}) 
-    })
-    .catch((err) => {
-        next(err)
-    })
- })
+// all your routes here
 
+// ***** (C)REATE ROUTES *****
 
- router.post("/movies/create", (req, res, next)=>{
-    const {title, genre, plot, cast} = req.body
+// GET '/movies/create' route to show movie creation form to the user
+router.get('/create', (req, res, next) => {
+  // to render the create form we fetch all celebrities from the DB, so we can make the user select which celebrities will be in the cast of the movie
+  Celebrity.find()
+  .then( (allCelebrities) => res.render('movies/new-movie.hbs', { allCelebrities }))
+  .catch( (err) => next(err));
+});
 
-    MovieModel.create({title, genre, plot, cast})
-    .then(()=>{
-        res.redirect("/movies")
-    })
-    .catch(()=>{
-        res.render("movies/new-movie.hbs")
-    })
-})
-
-
-router.get("/movies", (req, res, next)=>{
-    MovieModel.find()
-    .then((movies, celebrities)=>{
-        res.render("movies/movies.hbs", {movies, celebrities})
-    })
-    .catch((err)=>{
-        console.log(err)
-        next(err)
-    })
-})
-
-router.get("/movies/:id", (req, res, next)=>{
-    let dynamicId = req.params.id
-
-    MovieModel.findById(dynamicId)
-    .populate("cast")
-    .then((movie)=>{
-        res.render("movies/movie-details.hbs", {movie})
-    })
-    .catch((err) => {
-        next(err)
-    })
-})
-
-
-router.post('/movies/:id/delete', (req, res, next) => {
-    let dynamicId = req.params.id
-
-    MovieModel.findByIdAndDelete(dynamicId)
-        .then(() => {
-            res.redirect('/movies')
-        })
-        .catch((err) => {
-            next(err)
-        })
-
-})
-
-
-router.get('/movies/:id/edit', (req, res, next) => {
-    let dynamicId = req.params.id
-
+// POST '/movies/create' route to create a new movie in the DB
+router.post('/create', (req, res, next) => {
+  const { title, genre, plot, cast } = req.body
   
-    MovieModel.findById(dynamicId)
-        .then((movie) => {
-            return movie
-        })
-        .then((movie)=> {
-            CelebrityModel.find({})
-            .then((celebrities) => {
-                res.render('movies/edit-movie.hbs', {celebrities, movie})
-            })
-            .catch((err) => {
-                next(err)
-            })
-        })
-        .catch((err) => {
-            next(err)
-        })
+  Movie.create({ title, genre, plot, cast })
+  .then( () => res.redirect('/movies'))
+  .catch( (err) => res.render('movies/new-movie.hbs'));
+})
+
+// ***** (R)EAD ROUTES *****
+
+// GET '/movies' route to show all movies in a list
+router.get('/', (req, res, next) => {
+  Movie.find()
+  .then( (allMovies) => res.render('movies/movies.hbs', { allMovies }))
+  .catch( (err) => next(err));
+})
+
+// GET '/movies/:id' route to show details of a specific movie
+router.get('/:id', (req, res, next) => {
+  const { id } = req.params
+  
+  // when finding the Movie with all its attributes we will also `populate` the cast attribute. So instead of the value being the ID of the Celebrty, it will be all the Celebrity data
+  Movie.findById(id)
+  .populate('cast')
+  .then( (oneMovie) => res.render('movies/movie-details.hbs', { oneMovie }))
+  .catch( (err) => next(err));
+})
+
+// ***** (U)PDATE ROUTES *****
+
+// GET '/movies/:id/edit' route to show the movie edit form to the user
+router.get('/:id/edit', (req, res, next) => {
+  const { id } = req.params
+  
+  Movie.findById(id)
+  .then( (oneMovie) => {
+    // before rendering the edit form with the Movie info, we make a second mongoose call to get also all celebrities.
+    Celebrity.find()
+    .then( (allCelebrities) => {
+      // rendering the edit form with both data
+      res.render('movies/edit-movie.hbs', { oneMovie, allCelebrities })
+    })
+    .catch( (err) => next(err));
+  })
+  .catch( (err) => next(err));
+})
+
+// POST '/movies/:id/edit' route to edit the movie
+router.post('/:id/edit', (req, res, next) => {
+  const { id } = req.params
+  const { title, genre, plot, cast } = req.body
+  
+  Movie.findByIdAndUpdate(id, { title, genre, plot, cast })
+  .then( () => res.redirect(`/movies/${id}`))
+  .catch( (err) => next(err));
 })
 
 
-router.post('/movies/:id', (req, res, next) => {
-    let dynamicId = req.params.id
-    const {title, genre, plot, cast} = req.body
+// ***** (D)ELETE ROUTES *****
 
-    MovieModel.findByIdAndUpdate(dynamicId, {title, genre, plot, cast})
-        .then(() => {
-            res.redirect('/movies/' + dynamicId)
-        })
-        .catch((err) => {
-            next(err)
-        })
+// POST '/movies/:id/delete' route to delete a single movie
+router.post('/:id/delete', (req, res, next) => {
+  const { id } = req.params
+  
+  Movie.findByIdAndDelete(id)
+  .then( () => res.redirect('/movies'))
+  .catch( (err) => next(err));
 })
 
 module.exports = router;

@@ -1,14 +1,17 @@
 //  Add your code here
 const { Schema, model } = require("mongoose");
 
-const CelebritySchema = new Schema(
+const celebritySchema = new Schema(
   {
-      name : String, 
-      occupation: String,
-      catchPhrase: String
+    name: String,
+    occupation: String,
+    catchPhrase: String
   },
+  {
+    timestamps: true
+  }
 );
 
-const CelebrityModel = model("Celebrity", CelebritySchema);
+const Celebrity = model("Celebrity", celebritySchema);
 
-module.exports = CelebrityModel;
+module.exports = Celebrity;

@@ -7,8 +7,12 @@ const MovieSchema = new Schema(
     plot: String,
     cast: [{type: Schema.Types.ObjectId, ref:'Celebrity'}],
   },
+
+  {
+    timestamps: true
+  }
 );
 
-const MovieModel = model("Movie", MovieSchema);
+const Movie = model("Movie", MovieSchema);
 
-module.exports = MovieModel;
+module.exports = Movie;

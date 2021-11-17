@@ -2,24 +2,26 @@
 
 
 
-     <p>Title:{{movie.title}}</p>
-     <p>Genre:{{movie.genre}}</p>
-     <p>Description:{{movie.plot}}</p>
+     <p>Title:{{oneMovie.title}}</p>
+     <p>Genre:{{oneMovie.genre}}</p>
+     <p>Description:{{oneMovie.plot}}</p>
     
    
 <p>Cast:</p>
 <ul>
-{{#each movie.cast}}
+{{#each oneMovie.cast}}
     <li>{{this.name}}, {{this.occupation}}, {{this.catchPhrase}}</li>
 {{/each}}
 </ul>
-<form action="/movies/{{movie._id}}/delete" method="POST">
-    <button class="btn btn-outline-danger">Delete</button>
+<form action="/movies/{{oneMovie._id}}/delete" method="POST">
+    <button class="btn btn-outline-danger">Delete Movie</button>
 </form>
 
-<form action="/movies/{{movie._id}}/edit" method="GET">
-    <button type="submit" class="btn btn-outline-warning">Edit</button>
-</form>
+<a href="/movies/{{oneMovie._id}}/edit"><button>Edit the Movie</button></a>
+<br>
+
+<hr>
+<a href="/movies"><button class="btn btn-outline-success">Back to Movies list</button></a>
 
   
 

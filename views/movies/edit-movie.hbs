@@ -1,25 +1,26 @@
 <h2>Edit {{movie.title}}</h2>
 
-<form method="POST" action="/movies/{{movie._id}}">
+<form method="POST" action="/movies/{{oneMovie._id}}">
     <div class="row gx-3 gy-2 align-items-center" aria-label="Basic outlined example">
         <label  class="visually-hidden">Title</label>
-        <input name="title" type="text" class="form-control" value="{{movie.title}}">
+        <input name="title" type="text" class="form-control" value="{{oneMovie.title}}">
     </div>
     <div class="row gx-3 gy-2 align-items-center" aria-label="Basic outlined example">
         <label for="genre" class="visually-hidden">Genre</label>
-        <input name="genre" type="text" class="form-control" value="{{movie.genre}}">
+        <input name="genre" type="text" class="form-control" value="{{oneMovie.genre}}">
     </div>
     <div class="row gx-3 gy-2 align-items-center" aria-label="Basic outlined example">
         <label for="plot" class="visually-hidden">Plot</label>
-        <input name="plot" type="text" class="form-control" value="{{movie.plot}}">
+        <input name="plot" type="text" class="form-control" value="{{oneMovie.plot}}">
     </div>
     <div class="row gx-3 gy-2 align-items-center" aria-label="Basic outlined example">
+    <label for="cast" class="visually-hidden">Cast:</label>
 <select name="cast" id="cast" multiple>
 {{#each celebrities}}
 <option value="{{this._id}}">{{this.name}}</option>
 {{/each}}
 </select>
     </div>
-    
+    <hr>
     <button type="submit" class="btn btn-outline-success">Submit</button>
 </form>
